@@ -1,0 +1,1 @@
+pyinstaller main.spec -y --distpath "./dist/dir" & pyinstaller main.spec -y --clean --distpath "./dist/one" -- --one & ii .

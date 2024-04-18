@@ -9,19 +9,21 @@ class IDVaddon:
     @staticmethod
     def request(flow: http.HTTPFlow):
         if "mpay" in flow.request.url and 'qrcode' not in flow.request.url:
+            print("url:", flow.request.url)
             cv = flow.request.query.get("cv", None)
             if cv is not None:
-                flow.request.query["cv"] = cv.replace("c", "p")
+                flow.request.query["cv"] = cv.replace("c", "p" if 'login_methods' in flow.request.url else 'i')
                 flow.request.query.pop("arch", None)
 
                 print("query:", flow.request.query)
             
             if flow.request.method == "POST":
-                print("old_body:", flow.request.get_text())
-
                 new_body = dict(x.split("=") for x in flow.request.get_text().split("&"))
 
-                new_body["cv"] = new_body.get("cv", "").replace("c", "p")
+                print("old_body:", new_body)
+
+                new_body["cv"] = (new_body.get("cv", "c3.15.0")
+                                  .replace("c", "p" if 'login_methods' in flow.request.url else 'i'))
                 new_body.pop("arch", None)
 
                 flow.request.set_text("&".join([f"{k}={v}" for k, v in new_body.items()]))
